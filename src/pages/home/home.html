@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      RepsCounter - {{isLogged}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <login *ngIf="!isLogged" (userLogged)="userLogged($event)"></login>
+  <div *ngIf="isLogged" style="padding: 7px;">
+    <globalscore (userLoggedOut)="userLoggedOut($event)"></globalscore>
+    <score *ngIf="currentUserData" [userdata]="currentUserData"></score>
+    <score *ngFor="let userData of friends" [userdata]="userData"></score>
+  </div>
+</ion-content>

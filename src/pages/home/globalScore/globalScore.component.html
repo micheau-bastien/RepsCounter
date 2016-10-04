@@ -1,0 +1,21 @@
+<ion-card>
+    <ion-card-header>
+        Ton score global est de : {{ globalScore }}
+    </ion-card-header>
+    <ion-card-content>
+        <div *ngFor="let userMessage of message">
+            <div *ngIf="userMessage.key != '$key' && userMessage.key != '$exists'">
+                <span class="messageSender"> {{userMessage.author}} </span>
+                <span>: {{userMessage.message}} </span>
+            </div>
+        </div>
+    </ion-card-content>
+    <ion-row no-padding>
+      <ion-col text-right>
+        <button ion-button clear small color="danger" icon-left (click)="logout()">
+          <ion-icon name="log-out"></ion-icon>
+          Logout
+        </button>
+      </ion-col>
+    </ion-row>
+</ion-card>

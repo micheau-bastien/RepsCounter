@@ -1,0 +1,36 @@
+<ion-card>
+    <ion-card-header>
+        {{ userdata.name }} a fait :
+    </ion-card-header>
+    <ion-card-content>
+        <ion-list inset>
+            <ion-item *ngFor="let userScore of userDataScores">
+                <ion-row no-padding>
+                    <ion-col text-left>
+                        {{userScore.$key}} : {{userScore.$value}}
+                    </ion-col>
+                    <ion-col text-right>
+                        <button ion-button small icon-left (click)="add(userScore.$key, 1)">+1</button>
+                        <button ion-button small color="secondary" icon-left (click)="add(userScore.$key, 10)">+10</button>
+                    </ion-col>
+                </ion-row>
+            </ion-item>
+        </ion-list>
+    </ion-card-content>
+    <ion-row>
+        <ion-col text-left>
+            <ion-row no-padding *ngIf=" !isSelf">
+                <button ion-button clear small color="danger" icon-left (click)="showsRewardAlert()">
+                <ion-icon name="nutrition"></ion-icon>
+                Ajouter récompense
+            </button>
+            </ion-row>
+            <ion-row no-padding *ngIf=" isSelf">
+                <button ion-button clear small color="danger" icon-left (click)="showsAddExerciseAlert()">
+                <ion-icon name="bowtie"></ion-icon>
+                Ajouter Exercice
+            </button>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+</ion-card>

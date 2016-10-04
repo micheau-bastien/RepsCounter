@@ -1,0 +1,26 @@
+<ion-row>
+        <ion-col text-left>
+            <ion-row no-padding *ngIf="!isAddingMessage && !isSelf">
+                <button ion-button clear small color="danger" icon-left (click)="isAddingMessage = true">
+                <ion-icon name="nutrition"></ion-icon>
+                Ajouter récompense
+            </button>
+            </ion-row>
+            <ion-row *ngIf="isAddingMessage">
+                <ion-col>
+                    <ion-label floating>Score</ion-label>
+                    <ion-input type="number" [(ngModel)]='score'></ion-input>
+                </ion-col>
+                <ion-col>
+                    <ion-label floating>Récompense</ion-label>
+                    <ion-input type="text" [(ngModel)]='msg'></ion-input>
+                </ion-col>
+                <ion-col>
+                    <button ion-button  clear small icon-left color="danger" (click)="addMessage(score, msg)">
+                    <ion-icon name="nutrition"></ion-icon>
+                    Send
+                </button>
+                </ion-col>
+            </ion-row>
+        </ion-col>
+    </ion-row>

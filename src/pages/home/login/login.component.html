@@ -1,0 +1,18 @@
+<ion-list>
+
+    <ion-item>
+        <ion-label floating>Username</ion-label>
+        <ion-input type="text" [(ngModel)]='log'></ion-input>
+    </ion-item>
+
+    <ion-item>
+        <ion-label floating>Password</ion-label>
+        <ion-input type="password" [(ngModel)]='pwd'></ion-input>
+    </ion-item>
+
+    <ion-item>
+        <button ion-button block (click)="login(log, pwd)">Login</button>
+    </ion-item>
+
+    <p>{{messageError}}</p>
+</ion-list>
