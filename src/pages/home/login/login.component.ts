@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { AngularFire } from 'angularfire2';
-import { LoadingController } from 'ionic-angular';
+import { LoadingController, AlertController } from 'ionic-angular';
 
 @Component({
     selector: 'login',
@@ -14,7 +14,7 @@ export class LoginComponent {
     log: string = '';
     pwd: string = '';
 
-    constructor(public angularFire: AngularFire, public loadingController: LoadingController) {
+    constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) {
 
     }
 
@@ -35,6 +35,71 @@ export class LoginComponent {
                 this.isLogging = false;
                 this.messageError = "Il y a eu une erreur lors de l'authentification. Veuillez rééssayer !"
             });
+    }
+
+    showsSignupAlert() {
+        let prompt = this.alertController.create({
+            title: 'Inscription',
+            message: "Entrez vos données d'inscription. ",
+            inputs: [
+                {
+                    name: 'login',
+                    placeholder: 'Login'
+                },
+                {
+                    name: 'password',
+                    placeholder: 'Mot de passe',
+                    type: 'password'
+                },
+            ],
+            buttons: [
+                {
+                    text: 'Annuler',
+                    handler: data => {
+                    }
+                },
+                {
+                    text: "S'inscrire",
+                    handler: data => {
+                        this.signup(data.login, data.password);
+                    }
+                }
+            ]
+        });
+        prompt.present();
+    }
+
+    signup(login, password) {
+        let loader = this.loadingController.create({
+            content: "Inscription..."
+        });
+        loader.present();
+        this.angularFire.auth.createUser({
+            email: login + '@mail.mail',
+            password: password
+        })
+            .then(_ => {
+                this.angularFire.auth.take(1).subscribe(udata => {
+                    this.angularFire.database.object('users/' + udata.auth.uid).set({
+                        name: login,
+                        scoreTotal: 0,
+                        messages: {
+                            0: { RepsCounter: "On démarre l'entrainement ! 💪" }
+                        }
+                    }).then(_ => {
+                        loader.dismiss();
+                        this.userLogged.emit(true);
+                    })
+                    udata.auth.updateProfile({
+                        displayName: login,
+                        photoURL: ""
+                    })
+                })
+            })
+            .catch(error => {
+                this.messageError = error.message;
+                loader.dismiss();
+            })
     }
 
 }

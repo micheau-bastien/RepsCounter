@@ -1,19 +1,23 @@
 <ion-card>
-    <ion-card-header>
-        {{ userdata.name }} a fait :
+    <ion-card-header *ngIf='isSelf'>
+        Vous avez fait :
+    </ion-card-header>
+    <ion-card-header *ngIf='!isSelf'>
+        {{ userdata.name }} ({{userdata.scoreTotal}}) a fait :
     </ion-card-header>
     <ion-card-content>
         <ion-list inset>
             <ion-item *ngFor="let userScore of userDataScores">
-                <ion-row no-padding>
-                    <ion-col text-left>
-                        {{userScore.$key}} : {{userScore.$value}}
-                    </ion-col>
-                    <ion-col text-right>
-                        <button ion-button small icon-left (click)="add(userScore.$key, 1)">+1</button>
-                        <button ion-button small color="secondary" icon-left (click)="add(userScore.$key, 10)">+10</button>
-                    </ion-col>
-                </ion-row>
+                <ion-avatar item-left>
+                    <h1>{{userScore.$value}}</h1>
+                </ion-avatar>
+                <h2>
+                    {{userScore.$key}}
+                </h2>
+                <p *ngIf='isSelf'>
+                    <button ion-button small icon-left (click)="add(userScore.$key, 1)">+1</button>
+                    <button ion-button small color="secondary" icon-left (click)="add(userScore.$key, 10)">+10</button>
+                </p>
             </ion-item>
         </ion-list>
     </ion-card-content>

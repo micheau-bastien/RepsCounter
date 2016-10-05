@@ -1,18 +1,28 @@
-<ion-list>
+<ion-card>
+    <ion-list>
 
-    <ion-item>
-        <ion-label floating>Username</ion-label>
-        <ion-input type="text" [(ngModel)]='log'></ion-input>
-    </ion-item>
+        <ion-item>
+            <ion-label floating>Username</ion-label>
+            <ion-input type="text" [(ngModel)]='log'></ion-input>
+        </ion-item>
 
-    <ion-item>
-        <ion-label floating>Password</ion-label>
-        <ion-input type="password" [(ngModel)]='pwd'></ion-input>
-    </ion-item>
+        <ion-item>
+            <ion-label floating>Password</ion-label>
+            <ion-input type="password" [(ngModel)]='pwd'></ion-input>
+        </ion-item>
 
-    <ion-item>
-        <button ion-button block (click)="login(log, pwd)">Login</button>
-    </ion-item>
+        <ion-item>
+            <button ion-button block (click)="login(log, pwd)">Login</button>
+        </ion-item>
 
-    <p>{{messageError}}</p>
-</ion-list>
+        <p>{{messageError}}</p>
+    </ion-list>
+    <ion-row>
+        <ion-col>
+            <button ion-button clear (click)="showsSignupAlert()">
+            <ion-icon name="bowtie"></ion-icon>
+            S'inscrire
+        </button>
+        </ion-col>
+    </ion-row>
+</ion-card>

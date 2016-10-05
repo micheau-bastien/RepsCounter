@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import 'rxjs/add/operator/take'
-import { ModalController, AlertController } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 
 @Component({
     selector: 'score',
@@ -18,11 +18,26 @@ export class ScoreComponent {
     textMessage: string = '';
     actualUser: any = undefined;
     userDataScores: any[] = [];
+    scoreIsSubscribed: boolean = false;
 
     constructor(public angularFire: AngularFire, public alertController: AlertController) {
         this.angularFire.auth.subscribe(user => {
             this.actualUser = user.auth
         })
+    }
+
+    ngAfterContentInit() {
+        if (!this.scoreIsSubscribed) {
+            this.scoreIsSubscribed = true;
+            this.angularFire.database.list('/users/' + this.userdata.$key + '/scores').subscribe(scores => {
+                this.userDataScores = scores;
+            })
+        }
+
+        if (!this.isSelfChecked) {
+            this.isSelfChecked = true;
+            if (this.userdata.$key == this.actualUser.uid) this.isSelf = true;
+        }
     }
 
     showsRewardAlert() {
@@ -42,15 +57,13 @@ export class ScoreComponent {
             ],
             buttons: [
                 {
-                    text: 'Cancel',
+                    text: 'Annuler',
                     handler: data => {
-                        console.log('Cancel clicked');
                     }
                 },
                 {
-                    text: 'Save',
+                    text: 'Ajouter',
                     handler: data => {
-                        console.log('Saved clicked', data);
                         this.addMessage(data.score, data.reward)
                     }
                 }
@@ -71,15 +84,13 @@ export class ScoreComponent {
             ],
             buttons: [
                 {
-                    text: 'Cancel',
+                    text: 'Annuler',
                     handler: data => {
-                        console.log('Cancel clicked');
                     }
                 },
                 {
-                    text: 'Save',
+                    text: 'Ajouter',
                     handler: data => {
-                        console.log('Saved clicked', data);
                         this.addExercise(data.exercice)
                     }
                 }
@@ -88,20 +99,7 @@ export class ScoreComponent {
         prompt.present();
     }
 
-    ngAfterContentInit() {
-        console.log(this.userdata.$key)
-        this.angularFire.database.list('/users/' + this.userdata.$key + '/scores').subscribe(scores => {
-            console.log('scores', scores)
-            this.userDataScores = scores
-        })
-        if (!this.isSelfChecked) {
-            this.isSelfChecked = true;
-            if (this.userdata.$key == this.actualUser.uid) this.isSelf = true;
-        }
-    }
-
     add(key: string, nbToAdd: number) {
-        console.log('keyyyyy', key)
         this.angularFire.database.object('/users/' + this.actualUser.uid + '/scores/' + key).take(1).subscribe(data => {
             this.angularFire.database.object('/users/' + this.actualUser.uid + '/scores/' + key).set(data.$value + nbToAdd);
         })
@@ -118,7 +116,6 @@ export class ScoreComponent {
     }
 
     addMessage(scoreAccess: number, textMessage: string) {
-        console.log('ACUTALUSERHERE', this.userdata, this.actualUser)
         this.angularFire.database.object('/users/' + this.userdata.$key + '/messages/' + scoreAccess + '/' + this.actualUser.displayName).set(textMessage);
     }
 }
