@@ -7,10 +7,10 @@
 </ion-header>
 
 <ion-content>
-  <login *ngIf="!isLogged" (userLogged)="userLogged($event)"></login>
-  <div *ngIf="isLogged" style="padding: 7px;">
+  <login *ngIf="!currentUserId" (userLogged)="userLogged($event)"></login>
+  <div *ngIf="currentUserId" style="padding: 7px;">
     <globalscore (userLoggedOut)="userLoggedOut($event)"></globalscore>
-    <score *ngIf="currentUserData" [userdata]="currentUserData"></score>
-    <score *ngFor="let userData of friends" [userdata]="userData"></score>
+    <score *ngIf="currentUserId" [userid]="currentUserId"></score>
+    <score *ngFor="let userId of friends" [userid]="userId"></score>
   </div>
 </ion-content>

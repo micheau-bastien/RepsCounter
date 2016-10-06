@@ -3,11 +3,11 @@
         Vous avez fait :
     </ion-card-header>
     <ion-card-header *ngIf='!isSelf'>
-        {{ userdata.name }} ({{userdata.scoreTotal}}) a fait :
+        {{ userData.name }} ({{userData.scoreTotal}}) a fait :
     </ion-card-header>
     <ion-card-content>
         <ion-list inset>
-            <ion-item *ngFor="let userScore of userDataScores">
+            <ion-item *ngFor="let userScore of userData.scores">
                 <ion-avatar item-left>
                     <h1>{{userScore.$value}}</h1>
                 </ion-avatar>

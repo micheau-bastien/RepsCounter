@@ -8,17 +8,16 @@ import { AlertController } from 'ionic-angular';
     templateUrl: './score.component.html',
 })
 export class ScoreComponent {
-    @Input() userdata: any;
+    @Input() userid: any;
 
     isSelf: boolean = false;
-    isSelfChecked: boolean = false;
-    isAddingExercise: boolean = false;
+    userData: any = {};
+    userInit: boolean = false;
+
     nameExercise: string = '';
     scoreAccess: number = 0;
     textMessage: string = '';
     actualUser: any = undefined;
-    userDataScores: any[] = [];
-    scoreIsSubscribed: boolean = false;
 
     constructor(public angularFire: AngularFire, public alertController: AlertController) {
         this.angularFire.auth.subscribe(user => {
@@ -27,16 +26,14 @@ export class ScoreComponent {
     }
 
     ngAfterContentInit() {
-        if (!this.scoreIsSubscribed) {
-            this.scoreIsSubscribed = true;
-            this.angularFire.database.list('/users/' + this.userdata.$key + '/scores').subscribe(scores => {
-                this.userDataScores = scores;
-            })
-        }
-
-        if (!this.isSelfChecked) {
-            this.isSelfChecked = true;
-            if (this.userdata.$key == this.actualUser.uid) this.isSelf = true;
+        if (!this.userInit) {
+            this.userInit = true;
+            this.angularFire.database.list('/users/' + this.userid + '/scores').subscribe(scores => {
+                this.userData.scores = scores;
+            });
+            this.angularFire.database.object('/users/' + this.userid + '/name').take(1).subscribe(name => this.userData.name = name.$value);
+            this.angularFire.database.object('/users/' + this.userid + '/scoreTotal').subscribe(scoreTotal => this.userData.scoreTotal = scoreTotal.$value);
+            this.isSelf = (this.userid == this.actualUser.uid ? true : false);
         }
     }
 
@@ -110,12 +107,11 @@ export class ScoreComponent {
 
     addExercise(name: string) {
         this.angularFire.database.object('/users/' + this.actualUser.uid + '/scores/' + name).set(0).then(_ => {
-            this.isAddingExercise = false;
             this.nameExercise = '';
         })
     }
 
     addMessage(scoreAccess: number, textMessage: string) {
-        this.angularFire.database.object('/users/' + this.userdata.$key + '/messages/' + scoreAccess + '/' + this.actualUser.displayName).set(textMessage);
+        this.angularFire.database.object('/users/' + this.userid + '/messages/' + scoreAccess + '/' + this.actualUser.displayName).set(textMessage);
     }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFire } from 'angularfire2';
-import { NavController, LoadingController } from 'ionic-angular';
+import { NavController } from 'ionic-angular';
 
 @Component({
   selector: 'page-home',
@@ -8,47 +8,22 @@ import { NavController, LoadingController } from 'ionic-angular';
 })
 export class HomePage {
 
-  isLogged: boolean = false;
-  currentUserData: any = undefined
+  currentUserId: any = undefined;
   friends: any[] = [];
-  friendsInitialized: boolean = false
 
-  constructor(public navCtrl: NavController, public angularFire: AngularFire, public loadingController: LoadingController) {
+  constructor(public navCtrl: NavController, public angularFire: AngularFire) {
 
   }
 
-  userLogged(test) {
-    let loaderData = this.loadingController.create({
-      content: "Chargement des données..."
-    });
-    loaderData.present();
-    this.angularFire.auth.subscribe(user => {
-      if (user) {
-        this.isLogged = true;
-        console.log('ERR')
-        var currentUserDataPromise = this.angularFire.database.object('/users/' + user.uid)
-        currentUserDataPromise.subscribe(udata => {
-          this.currentUserData = udata
-        })
-        if (!this.friendsInitialized) {
-          this.friendsInitialized = true;
-          currentUserDataPromise.take(1).subscribe(data => {
-            if (data.friends) {
-              Object.keys(data.friends).forEach(key => {
-                this.angularFire.database.object('/users/' + data.friends[key]).take(1).subscribe(friend => {
-                  this.friends.push(friend);
-                })
-              })
-            }
-            loaderData.dismiss();
-          })
-        }
-      }
+  userLogged() {
+    this.angularFire.auth.take(1).subscribe(user => (user ? this.currentUserId = user.uid : console.log('ERROR LOGIN DIDN workd')))
+    this.angularFire.database.list('/users/' + this.currentUserId + '/friends').take(1).subscribe(friends => {
+      this.friends = friends.map(friend => friend.$value)
+      console.log(this.friends)
     })
   }
 
   userLoggedOut(test) {
-    this.isLogged = false;
     this.friends = [];
   }
 }
