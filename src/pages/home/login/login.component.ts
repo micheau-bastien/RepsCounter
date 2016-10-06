@@ -16,7 +16,7 @@ export class LoginComponent {
     log: string = '';
     pwd: string = '';
 
-    constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) {}
+    constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) { }
 
     ngOnInit() {
         //this.storage.get('userLog').then(data => this.messageError = data.username).catch(_ => this.messageError = 'nooooo')
@@ -25,7 +25,7 @@ export class LoginComponent {
     login(username: string, password: string) {
         this.isLogging = true;
         let loader = this.loadingController.create({
-            content: "Login..."
+            content: "Connexion"
         });
         loader.present()
         this.angularFire.auth.login({ email: username + "@mail.mail", password: password })
@@ -95,6 +95,11 @@ export class LoginComponent {
                         }
                     }).then(_ => {
                         loader.dismiss();
+                        this.storage.set('userLog', { username: login, password: password })
+                            .then(_ => {
+                                console.log(user)
+                                this.userLogged.emit(user.uid);
+                            })
                         this.userLogged.emit(user.uid);
                     })
                     udata.auth.updateProfile({

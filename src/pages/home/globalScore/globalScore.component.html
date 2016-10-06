@@ -11,10 +11,16 @@
         </div>
     </ion-card-content>
     <ion-row no-padding>
+        <ion-col text-left>
+        <button ion-button clear small color="danger" icon-left (click)="showsAddFriendAlert()">
+          <ion-icon name="contacts"></ion-icon>
+          Ajout d'ami
+        </button>
+      </ion-col>
       <ion-col text-right>
         <button ion-button clear small color="danger" icon-left (click)="logout()">
           <ion-icon name="log-out"></ion-icon>
-          Logout
+          Déconnexion
         </button>
       </ion-col>
     </ion-row>
