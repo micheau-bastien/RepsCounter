@@ -18,7 +18,6 @@ export class GlobalScoreComponent {
     constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) { }
 
     onInit() {
-        console.log('aa', this.userid)
     }
 
     ngOnInit() {
@@ -85,6 +84,17 @@ export class GlobalScoreComponent {
 
     addFriend(uid: string) {
         console.log(uid)
-        this.angularFire.database.list('/users/' + this.userid + '/friends').push(uid);
+        this.angularFire.database.object('/users/' + uid).take(1).subscribe(user => {
+            console.log(user)
+            if (user.$value) {
+                this.angularFire.database.list('/users/' + this.userid + '/friends').push(uid);
+            } else {
+                this.alertController.create({
+                    title: "Code invalide",
+                    message: "Le code secret est invalide",
+                    buttons: [{text: 'Ok'}]
+                }).present();
+            }
+        })
     }
 }
