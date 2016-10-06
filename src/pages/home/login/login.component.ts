@@ -1,12 +1,14 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, Input, EventEmitter } from '@angular/core';
 import { AngularFire } from 'angularfire2';
 import { LoadingController, AlertController } from 'ionic-angular';
+import { Storage } from '@ionic/storage'
 
 @Component({
     selector: 'login',
     templateUrl: './login.component.html',
 })
 export class LoginComponent {
+    @Input() storage;
     @Output() userLogged = new EventEmitter();
 
     messageError: string = undefined;
@@ -14,8 +16,10 @@ export class LoginComponent {
     log: string = '';
     pwd: string = '';
 
-    constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) {
+    constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) {}
 
+    ngOnInit() {
+        //this.storage.get('userLog').then(data => this.messageError = data.username).catch(_ => this.messageError = 'nooooo')
     }
 
     login(username: string, password: string) {
@@ -24,11 +28,14 @@ export class LoginComponent {
             content: "Login..."
         });
         loader.present()
-
         this.angularFire.auth.login({ email: username + "@mail.mail", password: password })
             .then(user => {
                 loader.dismiss()
-                this.userLogged.emit(user.uid);
+                this.storage.set('userLog', { username: username, password: password })
+                    .then(_ => {
+                        console.log(user)
+                        this.userLogged.emit(user.uid);
+                    })
             })
             .catch(_ => {
                 loader.dismiss()
@@ -78,7 +85,7 @@ export class LoginComponent {
             email: login + '@mail.mail',
             password: password
         })
-            .then(_ => {
+            .then(user => {
                 this.angularFire.auth.take(1).subscribe(udata => {
                     this.angularFire.database.object('users/' + udata.auth.uid).set({
                         name: login,
@@ -88,7 +95,7 @@ export class LoginComponent {
                         }
                     }).then(_ => {
                         loader.dismiss();
-                        this.userLogged.emit(true);
+                        this.userLogged.emit(user.uid);
                     })
                     udata.auth.updateProfile({
                         displayName: login,

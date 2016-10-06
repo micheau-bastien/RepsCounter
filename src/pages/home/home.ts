@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFire } from 'angularfire2';
-import { NavController } from 'ionic-angular';
+import { NavController, LoadingController } from 'ionic-angular';
+import { Storage } from '@ionic/storage'
 
 @Component({
   selector: 'page-home',
@@ -10,8 +11,31 @@ export class HomePage {
 
   currentUserId: any = undefined;
   friends: any[] = [];
+  login: any = {};
+  storage: any = new Storage();
 
-  constructor(public navCtrl: NavController, public angularFire: AngularFire) {
+  constructor(public navCtrl: NavController, public angularFire: AngularFire, public loadingController: LoadingController) {
+
+  }
+
+  ngOnInit() {
+    //console.log(sessionStorage.getItem("username"), sessionStorage.getItem('password'));
+    this.storage.get('userLog')
+      .then(login => {
+        if (login) {
+          let loader = this.loadingController.create({
+            content: "Login..."
+          });
+          loader.present()
+          this.angularFire.auth.login({ email: login.username + "@mail.mail", password: login.password })
+            .then(user => {
+              loader.dismiss()
+              this.userLogged(user.uid);
+            })
+        }
+      })
+      .catch(_ => console.log('NoLog'));
+
 
   }
 
@@ -26,6 +50,7 @@ export class HomePage {
   }
 
   userLoggedOut(test) {
+    this.storage.clear();
     this.currentUserId = undefined;
     this.friends = [];
   }
