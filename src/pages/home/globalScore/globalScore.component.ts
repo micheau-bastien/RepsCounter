@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, Input, EventEmitter } from '@angular/core';
 import { AngularFire } from 'angularfire2';
 
 @Component({
@@ -7,38 +7,45 @@ import { AngularFire } from 'angularfire2';
 })
 export class GlobalScoreComponent {
 
+    @Input() userid: any;
     @Output() userLoggedOut = new EventEmitter();
 
-    globalScore: number = undefined
-    message: any[] = undefined
+    globalScoreSub: any = undefined;
+    globalScore: number = undefined;
+    message: any[] = undefined;
 
-    constructor(public angularFire: AngularFire) {
-        this.angularFire.auth.subscribe(user => {
-            if (user) {
-                this.angularFire.database.object('/users/' + user.uid + '/scoreTotal').subscribe(data => {
-                    this.globalScore = data.$value
-                    this.angularFire.database.list('/users/' + user.uid + '/messages', {
-                        query: {
-                            orderByKey: true,
-                            endAt: this.globalScore.toString()
-                        }
-                    }).subscribe(data => {
-                        if (data[data.length - 1]) {
-                            var messagesLocal = []
-                            Object.keys(data[data.length - 1]).forEach(key => {
-                                if (key != '$key' && key != '$exists') {
-                                    messagesLocal.push({ author: key, message: data[data.length - 1][key] })
-                                }
-                            })
-                            this.message = messagesLocal
+    constructor(public angularFire: AngularFire) {}
+
+    onInit() {
+        console.log('aa', this.userid)
+    }
+
+    ngOnInit() {
+        console.log('bb', this.userid)
+        this.globalScoreSub = this.angularFire.database.object('/users/' + this.userid + '/scoreTotal').subscribe(scoreTotal => this.globalScore = scoreTotal.$value);
+        this.angularFire.database.object('/users/' + this.userid + '/scoreTotal').take(1).subscribe(scoreTotal => {
+            this.globalScore = scoreTotal.$value
+            this.angularFire.database.list('/users/' + this.userid + '/messages', {
+                query: {
+                    orderByKey: true,
+                    endAt: this.globalScore.toString()
+                }
+            }).take(1).subscribe(messages => {
+                if (messages[messages.length - 1]) {
+                    var messagesLocal = []
+                    Object.keys(messages[messages.length - 1]).forEach(key => {
+                        if (key != '$key' && key != '$exists') {
+                            messagesLocal.push({ author: key, message: messages[messages.length - 1][key] })
                         }
                     })
-                })
-            }
-        })
+                    this.message = messagesLocal
+                }
+            })
+        });
     }
 
     logout() {
+        this.globalScoreSub.unsubscribe();
         //this.angularFire.auth.logout();
         this.userLoggedOut.emit(false);
     }

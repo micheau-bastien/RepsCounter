@@ -9,7 +9,7 @@
 <ion-content>
   <login *ngIf="!currentUserId" (userLogged)="userLogged($event)"></login>
   <div *ngIf="currentUserId" style="padding: 7px;">
-    <globalscore (userLoggedOut)="userLoggedOut($event)"></globalscore>
+    <globalscore (userLoggedOut)="userLoggedOut($event)" *ngIf="currentUserId" [userid]="currentUserId"></globalscore>
     <score *ngIf="currentUserId" [userid]="currentUserId"></score>
     <score *ngFor="let userId of friends" [userid]="userId"></score>
   </div>

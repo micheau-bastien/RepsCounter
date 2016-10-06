@@ -26,9 +26,9 @@ export class LoginComponent {
         loader.present()
 
         this.angularFire.auth.login({ email: username + "@mail.mail", password: password })
-            .then(_ => {
-                this.userLogged.emit(true);
+            .then(user => {
                 loader.dismiss()
+                this.userLogged.emit(user.uid);
             })
             .catch(_ => {
                 loader.dismiss()

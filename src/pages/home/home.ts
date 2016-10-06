@@ -15,8 +15,10 @@ export class HomePage {
 
   }
 
-  userLogged() {
-    this.angularFire.auth.take(1).subscribe(user => (user ? this.currentUserId = user.uid : console.log('ERROR LOGIN DIDN workd')))
+  userLogged(uid: string) {
+    console.log('logged', uid)
+    this.currentUserId = uid;
+    this.angularFire.auth.take(1).subscribe(user => console.log(user))
     this.angularFire.database.list('/users/' + this.currentUserId + '/friends').take(1).subscribe(friends => {
       this.friends = friends.map(friend => friend.$value)
       console.log(this.friends)
@@ -24,6 +26,7 @@ export class HomePage {
   }
 
   userLoggedOut(test) {
+    this.currentUserId = undefined;
     this.friends = [];
   }
 }
