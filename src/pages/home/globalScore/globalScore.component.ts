@@ -14,6 +14,7 @@ export class GlobalScoreComponent {
     globalScoreSub: any = undefined;
     globalScore: number = undefined;
     message: any[] = undefined;
+    messageSub: any = undefined;
 
     constructor(public angularFire: AngularFire, public loadingController: LoadingController, public alertController: AlertController) { }
 
@@ -26,15 +27,15 @@ export class GlobalScoreComponent {
         });
         loader.present()
         console.log('bb', this.userid)
-        this.globalScoreSub = this.angularFire.database.object('/users/' + this.userid + '/scoreTotal').subscribe(scoreTotal => this.globalScore = scoreTotal.$value);
-        this.angularFire.database.object('/users/' + this.userid + '/scoreTotal').take(1).subscribe(scoreTotal => {
+        this.globalScoreSub = this.angularFire.database.object('/users/' + this.userid + '/scoreTotal').subscribe(scoreTotal => {
             this.globalScore = scoreTotal.$value
-            this.angularFire.database.list('/users/' + this.userid + '/messages', {
+            if(this.messageSub) this.messageSub.unsubscribe();
+            this.messageSub = this.angularFire.database.list('/users/' + this.userid + '/messages', {
                 query: {
                     orderByKey: true,
                     endAt: this.globalScore.toString()
                 }
-            }).take(1).subscribe(messages => {
+            }).subscribe(messages => {
                 if (messages[messages.length - 1]) {
                     var messagesLocal = []
                     Object.keys(messages[messages.length - 1]).forEach(key => {
@@ -51,6 +52,7 @@ export class GlobalScoreComponent {
 
     logout() {
         this.globalScoreSub.unsubscribe();
+        this.messageSub.unsubscribe();
         //this.angularFire.auth.logout();
         this.userLoggedOut.emit(false);
     }
