@@ -12,11 +12,11 @@ import { ScoreComponent } from '../pages/home/score/score.component';
 import { AngularFireModule, AuthMethods, AuthProviders } from 'angularfire2';
 
 export const firebaseConfig = {
-  apiKey: 'AIzaSyBI-VOGOo3I9BVRSrYsMT0DappP0p-IVuI',
-  authDomain: 'sportcount-645c4.firebaseapp.com',
-  databaseURL: 'https://sportcount-645c4.firebaseio.com',
-  storageBucket: 'sportcount-645c4.appspot.com',
-  messagingSenderId: "905266853625"
+  apiKey: ,
+  authDomain: ,
+  databaseURL: ,
+  storageBucket: ,
+  messagingSenderId: 
 };
 
 export const myFirebaseAuthConfig = {
